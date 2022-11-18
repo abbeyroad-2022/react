@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="root"></div>
+</body>
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/prop-types@15.8.1/prop-types.js"></script>
+<script type="text/babel">
+  const root = document.querySelector("#root");
+
+  const Btn = ({text = "test!",changeValue}) => {
+    console.log(text,"was randered")
+    return (
+      <button
+        onClick={changeValue}
+        style={{
+          backgroundColor: "green",
+          color: "white",
+          padding: "20px",
+          border: 0,
+          borderRadius: 10,
+        }}>{text}
+      </button>
+    )
+  }
+
+  const Test = (props) => {
+    //console.log(props);
+    return(
+      <div>
+        <h1>{props.title}</h1>
+        <p>{props.text}</p>
+        <p style={{color: props.bool? "blue": "red"}}>{props.bool?"성공":"실패"}</p>
+      </div>
+    )
+  }
+  
+  //부모가 어떤 state라도 변경된다면 자식은 전부 리렌더링
+  //하지만 밑에 memo를 이용한다면 변경된 자식만 리렌더링
+  const MemorizedBtn = React.memo(Btn);
+
+  Test.propTypes = {
+    text: PropTypes.string.isRequire,
+    bool: PropTypes.bool.isRequire,
+  }
+  
+  const App = () => {
+    let [value,setValue] = React.useState("Save Changes");
+    const changeValue = () => {
+      setValue("Revert Changes")
+    }
+
+    return (
+      <div>
+        <Btn text={value} changeValue={changeValue} />
+        <Btn text="Continue" />
+        <Btn  />
+        <Test title="title!" text="test!" bool={false} />
+        <Test title="title!" text={false} bool="hello" />
+        <MemorizedBtn text={value} changeValue={changeValue} />
+        <MemorizedBtn text="Continue" />
+      </div>
+    )
+  };
+
+  ReactDOM.render(<App />, root);
+</script>
+</html>
